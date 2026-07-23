@@ -2,39 +2,29 @@ using UnityEngine;
 
 public class CharacterBase : MonoBehaviour
 {
-    public const int WALL_LAYER = 6;
+    protected CharacterMovementBase movement;
+    protected CharacterStatBase stat;
+    protected CharacterHealthBase health;
+    public CharacterHealthBase Health => health;
 
-    [SerializeField]
-    private float speed;
-    private Vector2 _moveDirection;
 
-    private void Start()
+    private void Awake()
     {
-        _moveDirection = Random.insideUnitCircle.normalized;
+        movement = GetComponent<CharacterMovementBase>();
+        stat = GetComponent<CharacterStatBase>();
+        health = GetComponent<CharacterHealthBase>();
+    }
+    protected virtual void Start()
+    {
+        movement.CollideWithCharaterEvent.AddListener(OnCollideWithCharacter);
     }
 
-    private void Update()
+    protected virtual void OnCollideWithCharacter(GameObject other)
     {
-        Vector2 newPos = (Vector2)transform.position + _moveDirection * speed * Time.deltaTime;
-        transform.position = newPos;
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.otherCollider.gameObject.layer == WALL_LAYER)
+        CharacterHealthBase otherCharacterHealth = other.GetComponent<CharacterHealthBase>();
+        if (otherCharacterHealth)
         {
-            HandleWallCollision(collision);
+            otherCharacterHealth.Damaged(stat.Damage);
         }
-    }
-
-    private void HandleWallCollision(Collision2D collision)
-    {
-        Transform otherTransform = collision.otherCollider.transform;
-        Vector2 collisionDirection = otherTransform.position - transform.position;
-        Vector3 normal = collision.GetContact(0).normal;
-        Vector3 reflectedVelocity =
-            Vector3.Reflect(_moveDirection, normal);
-
-        _moveDirection = reflectedVelocity;
     }
 }
