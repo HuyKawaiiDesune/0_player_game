@@ -1,13 +1,14 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Garen : CharacterBase
 {
     [SerializeField]
-    private AbilityBase E;
+    private GarenE E;
     [SerializeField]
-    private AbilityBase R;
+    private GarenR R;
 
     [SerializeField]
     private GameObject eVisual;
@@ -25,40 +26,32 @@ public class Garen : CharacterBase
     protected override void Start()
     {
         base.Start();
+
         rAvailable = true;
         eDisabled = false;
+
+        E.OnTimerDone.AddListener(DamageE);
+        R.RTargetFound.AddListener(ActiveR);
     }
 
     private void Update()
     {
+        float deltaTime = Time.deltaTime;
+
         if (rAvailable)
         {
-            foreach (var target in R.targetInRage)
-            {
-                CharacterHealthBase health = target.character.Health;
-                if (health.Value < health.MaxHealth * rExecuteThreshold)
-                {
-                    rAvailable = false;
-                    ActiveR(target.character);
-                    DisableE();
-                    break;
-                }
-            }
+            R.OnUpdate(deltaTime);
         }
 
         if (!eDisabled)
         {
-            foreach (var target in E.targetInRage)
-            {
-                target.timer += Time.deltaTime;
-                if (target.timer > eTimerMax)
-                {
-                    target.timer -= eTimerMax;
-                    target.character.Health.Damaged(stat.Damage);
-                }
-            }
+            E.OnUpdate(deltaTime);
         }
-        
+    }
+
+    private void DamageE(CharacterBase character)
+    {
+        character.Health.Damaged(E.EDamage);
     }
 
     private void ActiveR(CharacterBase target)
@@ -78,6 +71,8 @@ public class Garen : CharacterBase
         {
             stat.UnRoot();
         });
+
+        DisableE();
     }
 
     private void DisableE()

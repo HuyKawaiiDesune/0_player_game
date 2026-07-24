@@ -1,65 +1,60 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class Darius : CharacterBase
 {
     [SerializeField]
-    private AbilityBase Qinner;
+    private DariusQ Q;
     [SerializeField]
-    private AbilityBase Qoutter;
-    [SerializeField]
-    private AbilityBase R;
+    private BasicAbility R;
 
     [SerializeField]
-    private GameObject qVisual;
+    private OpacityEffect qVisual;
     [SerializeField]
     private GameObject rVisual;
-
-    private float qTimer;
-    private const float qMaxTimer = 3.0f;
-
-    [SerializeField]
-    private float qDamageInner = 1.0f;
-    [SerializeField]
-    private float qDamageOuter = 1.0f;
-    [SerializeField]
-    private float qHeal = 1.0f;
 
     protected override void Start()
     {
         base.Start();
-        qTimer = 0;
+        Q.OnCooldown.AddListener(ActiveQ);
     }
 
     private void Update()
     {
-        qTimer += Time.deltaTime;
-        if (qTimer > qMaxTimer)
-        {
-            qTimer -= qMaxTimer;
-            ActiveQ();
-        }
+        float deltaTime = Time.deltaTime;
+        Q.OnUpdate(deltaTime);
     }
 
     private void ActiveQ()
     {
-        foreach (var target in Qinner.targetInRage)
-        {
-            target.character.Health.Damaged(qDamageInner);
-        }
-        foreach (var target in Qoutter.targetInRage)
-        {
-            target.character.Health.Damaged(qDamageOuter);
-            Health.Damaged(-qHeal);
-        }
+        QVisual();
+
+        DOVirtual.DelayedCall(Q.QWindupLength, QDamage);
     }
 
     private void QVisual()
     {
-        qVisual.SetActive(true);
-        DOVirtual.DelayedCall(0.2f, () =>
+        qVisual.gameObject.SetActive(true);
+        qVisual.OnOpacity();
+    }
+
+    private void QDamage()
+    {
+        foreach (var target in Q.targetInRage)
         {
-            qVisual.SetActive(false);
-        });
+            Vector2 dir = transform.position - target.Character.transform.position;
+            float distanceSqr = Vector2.SqrMagnitude(dir);
+
+            if (distanceSqr <= Q.QInnerRange * Q.QInnerRange)
+            {
+                target.Character.Health.Damaged(Q.QInnerDamage);
+            }
+            else
+            {
+                target.Character.Health.Damaged(Q.QOuterDamage);
+                health.Damaged(-Q.QHeal);
+            }
+        }
     }
 }

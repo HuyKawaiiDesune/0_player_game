@@ -57,7 +57,6 @@ public class CharacterHealthBase : MonoBehaviour
 
         OnHealthChange?.Invoke(value);
 
-        Debug.Log($"{gameObject.name} Heath: {value}");
         if (value <= 0)
         {
             OnDeath();
@@ -66,7 +65,6 @@ public class CharacterHealthBase : MonoBehaviour
    
     private void OnDeath()
     {
-        Debug.Log($"{gameObject.name} Died");
         Destroy(gameObject);
     }
 }

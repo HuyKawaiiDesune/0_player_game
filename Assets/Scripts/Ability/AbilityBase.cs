@@ -1,20 +1,42 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using static Garen;
 
-public class AbilityBase : MonoBehaviour
+public class AbilityBase<T> : MonoBehaviour where T : AbilityTarget, new()
 {
     [SerializeField]
     private CharacterBase character;
 
-    public List<AbilityTarget> targetInRage;
-    private List<AbilityTarget> toRemoveTarget;
+    public List<T> targetInRage;
+    private List<T> toRemoveTarget;
+
+    private void Awake()
+    {
+        if (character == null)
+            GetComponentInParent<CharacterBase>();
+        targetInRage = new List<T>();
+        toRemoveTarget = new List<T>();
+
+        OnAwake();
+    }
+
+    protected virtual void OnAwake()
+    {
+
+    }
 
     private void Start()
     {
-        targetInRage = new List<AbilityTarget>();
-        toRemoveTarget = new List<AbilityTarget>();
+        OnStart();
+    }
+
+    protected virtual void OnStart()
+    {
+
+    }
+
+    public virtual void OnUpdate(float deltaTime)
+    {
+
     }
 
     private void LateUpdate()
@@ -31,7 +53,9 @@ public class AbilityBase : MonoBehaviour
         CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
         if (character && character != this.character)
         {
-            targetInRage.Add(new AbilityTarget(character));
+            var target = new T();
+            target.Init(character);
+            targetInRage.Add(target);
         }
     }
 
@@ -40,7 +64,7 @@ public class AbilityBase : MonoBehaviour
         CharacterBase character = collision.gameObject.GetComponent<CharacterBase>();
         foreach (var target in targetInRage)
         {
-            if (target.character == character)
+            if (target.Character == character)
             {
                 toRemoveTarget.Add(target);
                 break;
@@ -51,12 +75,11 @@ public class AbilityBase : MonoBehaviour
 
 public class AbilityTarget
 {
-    public CharacterBase character;
-    public float timer;
+    private CharacterBase character;
+    public CharacterBase Character => character;
 
-    public AbilityTarget(CharacterBase character)
+    public virtual void Init(CharacterBase character)
     {
         this.character = character;
-        timer = 0;
     }
 }

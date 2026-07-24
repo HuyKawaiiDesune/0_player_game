@@ -14,6 +14,7 @@ public class CharacterMovementBase : MonoBehaviour
     private Rigidbody2D _rb;
     private Vector2 _moveDirection;
 
+    [HideInInspector]
     public UnityEvent<GameObject> CollideWithCharaterEvent;
 
     private void Awake()
