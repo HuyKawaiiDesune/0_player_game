@@ -23,6 +23,11 @@ public class TargetTimerAbility : AbilityBase<TimerAbilityTarget>
             }
         }
     }
+
+    public override bool Active()
+    {
+        return false;
+    }
 }
 
 public class TimerAbilityTarget : AbilityTarget

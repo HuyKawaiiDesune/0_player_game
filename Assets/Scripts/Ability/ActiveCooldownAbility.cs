@@ -8,7 +8,7 @@ public class ActiveCooldownAbility : AbilityBase<AbilityTarget>
     private float timer;
 
     [HideInInspector]
-    public UnityEvent OnCooldown;
+    public UnityEvent OnActive;
 
     protected override void OnStart()
     {
@@ -18,13 +18,18 @@ public class ActiveCooldownAbility : AbilityBase<AbilityTarget>
 
     public override void OnUpdate(float deltaTime)
     {
-        base.OnUpdate(deltaTime);
-
         timer -= deltaTime;
-        if (timer <= 0)
+    }
+
+    public override bool Active()
+    {
+        if (timer <= 0 && targetInRage.Count > 0)
         {
             timer += cooldown;
-            OnCooldown?.Invoke();
+            OnActive?.Invoke();
+            return true;
         }
+
+        return false;
     }
 }

@@ -4,21 +4,27 @@ using UnityEngine.Events;
 public class GarenR : BasicAbility
 {
     [SerializeField]
-    private float rExecuteThreshold;
+    private float rMissingHealthDamage = 0.35f;
+    [SerializeField]
+    private float panicHealthThreshold = 0.05f;
 
     [HideInInspector]
-    public UnityEvent<CharacterBase> RTargetFound;
+    public UnityEvent<CharacterBase, float> RTargetFound;
 
-    public override void OnUpdate(float deltaTime)
+    public override bool Active()
     {
         foreach (var target in targetInRage)
         {
             CharacterHealthBase health = target.Character.Health;
-            if (health.Value < health.MaxHealth * rExecuteThreshold)
+            float damageDeal = (health.MaxHealth - health.Value) * rMissingHealthDamage;
+            bool panicR = character.Health.Value <= character.Health.MaxHealth * panicHealthThreshold;
+            if (health.Value < damageDeal || panicR)
             {
-                RTargetFound?.Invoke(target.Character);
-                break;
+                RTargetFound?.Invoke(target.Character, damageDeal);
+                return true;
             }
         }
+
+        return false;
     }
 }

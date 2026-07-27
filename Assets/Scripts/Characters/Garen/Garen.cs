@@ -16,11 +16,8 @@ public class Garen : CharacterBase
     private GameObject rVisual;
 
     bool rAvailable;
-    bool eDisabled;
+    bool eEnable;
 
-    private const float eTimerMax = 0.2f;
-    private const float rExecuteThreshold = 0.25f;
-    private const float rDelay = 0.5f;
     private const float eActiveDelay = 1.0f;
 
     protected override void Start()
@@ -28,7 +25,7 @@ public class Garen : CharacterBase
         base.Start();
 
         rAvailable = true;
-        eDisabled = false;
+        eEnable = true;
 
         E.OnTimerDone.AddListener(DamageE);
         R.RTargetFound.AddListener(ActiveR);
@@ -38,14 +35,24 @@ public class Garen : CharacterBase
     {
         float deltaTime = Time.deltaTime;
 
-        if (rAvailable)
+        if (!state.Finished)
         {
-            R.OnUpdate(deltaTime);
+            state.Update(deltaTime);
         }
-
-        if (!eDisabled)
+        else
         {
-            E.OnUpdate(deltaTime);
+            if (rAvailable && R.Active())
+            {
+                state.state = CharacterState.R;
+                state.Init(eActiveDelay);
+            }
+            else if (eEnable)
+            {
+                state.state = CharacterState.E;
+                state.Init(0);
+
+                E.OnUpdate(deltaTime);
+            }
         }
     }
 
@@ -54,37 +61,32 @@ public class Garen : CharacterBase
         character.Health.Damaged(E.EDamage);
     }
 
-    private void ActiveR(CharacterBase target)
+    private void ActiveR(CharacterBase target, float damage)
     {
         stat.Root();
+        ToggleE(false);
 
-        DOVirtual.DelayedCall(rDelay, () =>
+        DOVirtual.DelayedCall(R.CastTime, () =>
         {
             if (target?.Health.IsDead == false)
             {
                 Instantiate(rVisual, target.transform.position, Quaternion.identity);
-                target.Health.Damaged(health.Value);
+                target.Health.Damaged(damage);
             }
         });
 
         DOVirtual.DelayedCall(eActiveDelay, () =>
         {
             stat.UnRoot();
+            ToggleE(true);
         });
 
-        DisableE();
     }
 
-    private void DisableE()
+    private void ToggleE(bool active)
     {
-        eDisabled = true;
-        eVisual.SetActive(false);
-
-        DOVirtual.DelayedCall(eActiveDelay, () =>
-        {
-            eDisabled = false;
-            eVisual.SetActive(true);
-        });
+        eEnable = active;
+        eVisual.SetActive(active);
     }
 
     protected override void OnCollideWithCharacter(GameObject other)

@@ -27,6 +27,7 @@ public class CharacterHealthBase : MonoBehaviour
     {
         maxHealth = stat.MaxHealth;
         value = maxHealth;
+        OnHealthChange?.Invoke(value);
     }
 
     public void Damaged(float damageTaken, float delay = 0f, bool trueDamage = false)
@@ -65,6 +66,6 @@ public class CharacterHealthBase : MonoBehaviour
    
     private void OnDeath()
     {
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

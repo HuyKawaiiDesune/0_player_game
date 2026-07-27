@@ -20,4 +20,12 @@ public class EVisual : MonoBehaviour
                 .SetLoops(-1, LoopType.Restart);
         }
     }
+
+    private void OnDestroy()
+    {
+        for (int i = 0; i < hiltCount; i++)
+        {
+            hilts[i].DOKill();
+        }
+    }
 }

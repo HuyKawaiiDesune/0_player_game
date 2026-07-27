@@ -1,6 +1,5 @@
 using UnityEngine;
 
-public class BasicAbility : AbilityBase<AbilityTarget>
+public abstract class BasicAbility : AbilityBase<AbilityTarget>
 {
-    
 }

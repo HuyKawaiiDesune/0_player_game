@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 077d5bb9b021d424e842b2e1be0d33d9, type: 3}
   m_Name: BaseStat
   m_EditorClassIdentifier: Assembly-CSharp::StatSO
-  MaxHealth: 10
+  MaxHealth: 25
   Damage: 1
   Defend: 0
   MovementSpeed: 5

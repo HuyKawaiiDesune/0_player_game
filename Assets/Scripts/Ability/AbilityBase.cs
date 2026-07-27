@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityBase<T> : MonoBehaviour where T : AbilityTarget, new()
+public abstract class AbilityBase<T> : MonoBehaviour where T : AbilityTarget, new()
 {
     [SerializeField]
-    private CharacterBase character;
+    protected CharacterBase character;
+
+    [SerializeField]
+    private float castTime;
+    public float CastTime => castTime;
 
     public List<T> targetInRage;
     private List<T> toRemoveTarget;
@@ -38,6 +42,8 @@ public class AbilityBase<T> : MonoBehaviour where T : AbilityTarget, new()
     {
 
     }
+
+    public abstract bool Active();
 
     private void LateUpdate()
     {
