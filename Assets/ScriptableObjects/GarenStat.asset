@@ -16,3 +16,4 @@ MonoBehaviour:
   Damage: 1
   Defend: 0
   MovementSpeed: 5
+  RecoverMultiplier: 3

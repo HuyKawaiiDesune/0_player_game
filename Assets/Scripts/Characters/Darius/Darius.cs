@@ -18,7 +18,7 @@ public class Darius : CharacterBase
     [SerializeField]
     private OpacityEffect qVisual;
     [SerializeField]
-    private GameObject rVisual;
+    private AnimationFollow rVisual;
 
     [SerializeField]
     private float bleedDmg;
@@ -26,16 +26,15 @@ public class Darius : CharacterBase
     [SerializeField]
     private Transform target;
 
-    bool rAvailable;
-
     protected override void Start()
     {
         base.Start();
-        rAvailable = true;
 
         AA.OnAttackAvailable.AddListener(AutoAttack);
         Q.OnActive.AddListener(ActiveQ);
         R.RTargetFound.AddListener(ActiveR);
+
+        animator.OnAAHitCallback += HandleAAHit;
     }
 
     private void Update()
@@ -53,7 +52,7 @@ public class Darius : CharacterBase
         }
         else
         {
-            if (rAvailable && R.Active())
+            if (R.available && R.Active())
             {
                 state.state = CharacterState.R;
                 state.Init(R.CastTime);
@@ -80,12 +79,19 @@ public class Darius : CharacterBase
         transform.up = lookDirection;
     }
 
+    CharacterBase aaTarget;
     private void AutoAttack(CharacterBase target)
     {
-        aaVisual.OnRotate();
-        target.Health.Damaged(stat.Damage);
+        animator.PlayAA();
+        aaTarget = target;
+    }
 
-        ApplyBleed(target.Stat);
+    private void HandleAAHit()
+    {
+        aaTarget.Health.Damaged(stat.Damage);
+        aaTarget.GetPushBack(transform.position, 20.0f);
+        ApplyBleed(aaTarget.Stat);
+        Debug.Log("AA hit");
     }
 
     private void ActiveQ()
@@ -97,6 +103,7 @@ public class Darius : CharacterBase
 
     private void QVisual()
     {
+        animator.PlayQ();
         qVisual.gameObject.SetActive(true);
         qVisual.OnOpacity();
     }
@@ -111,33 +118,40 @@ public class Darius : CharacterBase
             if (distanceSqr <= Q.QInnerRange * Q.QInnerRange)
             {
                 target.Character.Health.Damaged(Q.QInnerDamage);
+                target.Character.GetPushBack(transform.position, 10.0f);
             }
             else if (distanceSqr < Q.QOutterRange * Q.QOutterRange)
             {
                 target.Character.Health.Damaged(Q.QOuterDamage);
                 health.Damaged(-Q.QHeal);
                 ApplyBleed(target.Character.Stat);
+                target.Character.GetPushBack(transform.position, 30.0f);
             }
         }
     }
 
+    float rStagger = 0.4f;
     private void ActiveR(CharacterBase target, float damage)
     {
-        stat.Root();
-        rAvailable = false;
+        animator.PlayR(out float length);
+        float selfRootTime = Time.time + length;
+        Root root = new Root(selfRootTime);
+        stat.ApplyStatusEffect(root);
+        R.available = false;
 
         DOVirtual.DelayedCall(R.CastTime, () =>
         {
-            if (target?.Health.IsDead == false)
+            var visual = Instantiate(rVisual);
+            visual.Init(target.transform);
+            visual.onImpact += () =>
             {
-                Instantiate(rVisual, target.transform.position, Quaternion.identity);
-                target.Health.Damaged(damage);
-            }
-        });
-
-        DOVirtual.DelayedCall(R.CastTime, () =>
-        {
-            stat.UnRoot();
+                if (target?.Health.IsDead == false)
+                {
+                    target.Health.Damaged(damage);
+                    Root targetRoot = new Root(selfRootTime);
+                    target.Stat.ApplyStatusEffect(root);
+                }
+            };
         });
     }
 
@@ -155,33 +169,38 @@ public class Darius : CharacterBase
         characterStat.ApplyStatusEffect(bleed);
     }
 
+    public override void Restart()
+    {
+        base.Restart();
+        R.Restart();
+    }
 }
 
 
-public class Bleed : SpecialEffect
+public class Bleed : StatusEffect
 {
     public float damage;
     public int stack;
 
-    public float timer;
+    public float bleedTimer;
     public const float MAX_TIMER = 1.0f;
-    public const int MAX_STACK = 5;
+    public const int MAX_STACK = 1;
 
     public override void OnUpdate(CharacterStatBase stat, float deltaTime)
     {
-        timer += deltaTime;
-        if (timer > MAX_TIMER)
+        bleedTimer += deltaTime;
+        if (bleedTimer > MAX_TIMER)
         {
-            timer -= MAX_TIMER;
+            bleedTimer -= MAX_TIMER;
             stat.Health.Damaged(damage * stack);
         }
     }
 
-    public override void ApplyStatusEffect(CharacterStatBase stat, Dictionary<SpecialEffectID, SpecialEffect> effectDict)
+    public override void ApplyStatusEffect(CharacterStatBase stat, Dictionary<StatusEffectID, StatusEffect> effectDict)
     {
-        if (effectDict.ContainsKey(SpecialEffectID.Bleed))
+        if (effectDict.ContainsKey(StatusEffectID.Bleed))
         {
-            Bleed bleed = effectDict[SpecialEffectID.Bleed] as Bleed;
+            Bleed bleed = effectDict[StatusEffectID.Bleed] as Bleed;
             if (bleed == null)
                 return;
 
@@ -193,10 +212,10 @@ public class Bleed : SpecialEffect
         }
 
         this.visualGameObject = GameObject.Instantiate(VisualEffectManager.GetBleedEffect(this.stack), stat.Character.transform);
-        effectDict[SpecialEffectID.Bleed] = this;
+        effectDict[StatusEffectID.Bleed] = this;
     }
 
-    public Bleed(float damage) : base(SpecialEffectID.Bleed)
+    public Bleed(float damage) : base(StatusEffectID.Bleed, float.MaxValue)
     {
         this.damage = damage;
         stack = 1;

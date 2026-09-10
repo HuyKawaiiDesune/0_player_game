@@ -4,8 +4,9 @@ using UnityEngine;
 public class CharacterStatBase : MonoBehaviour
 {
     private CharacterBase character;
-    private CharacterHealthBase heath;
     public CharacterBase Character => character;
+    
+    private CharacterHealthBase heath;
     public CharacterHealthBase Health => heath;
 
     public StatSO statData;
@@ -22,11 +23,12 @@ public class CharacterStatBase : MonoBehaviour
     private float _movementSpeed;
     public float MovementSpeed => _movementSpeed;
 
-    #region StatusEffect
-    private int _rooted;
-    public bool Rooted => _rooted > 0;
+    private float _recoverMultiplier;
+    public float RecoverMultiplier => _recoverMultiplier;
 
-    private Dictionary<SpecialEffectID, SpecialEffect> _specialEffects;
+    #region StatusEffect
+    private Dictionary<StatusEffectID, StatusEffect> _specialEffects;
+    List<StatusEffectID> toRemove = new List<StatusEffectID>();
     #endregion
 
     private void Awake()
@@ -35,7 +37,7 @@ public class CharacterStatBase : MonoBehaviour
         _damage = statData.Damage;
         _defend = statData.Defend;
         _movementSpeed = statData.MovementSpeed;
-        _rooted = 0;
+        _recoverMultiplier = statData.RecoverMultiplier;
 
         heath = GetComponent<CharacterHealthBase>();
         character = GetComponent<CharacterBase>();
@@ -43,61 +45,52 @@ public class CharacterStatBase : MonoBehaviour
 
     private void Start()
     {
-        _specialEffects = new Dictionary<SpecialEffectID, SpecialEffect>();    
+        _specialEffects = new Dictionary<StatusEffectID, StatusEffect>();    
     }
 
     private void Update()
     {
         float deltaTime = Time.deltaTime;
+        toRemove.Clear();
 
         foreach (var effect in _specialEffects)
         {
             effect.Value.OnUpdate(this, deltaTime);
+            if (effect.Value.Timer <= Time.time)
+                toRemove.Add(effect.Key);
+        }
+
+        foreach (var effect in toRemove)
+        {
+            _specialEffects.Remove(effect);
         }
     }
 
-    public void Root()
-    {
-        _rooted++;
-    }
-
-    public void UnRoot()
-    {
-        _rooted--;
-    }
-
-    public void ApplyStatusEffect(SpecialEffect effect)
+    public void ApplyStatusEffect(StatusEffect effect)
     {
         effect.ApplyStatusEffect(this, _specialEffects);
     }
 
-    public SpecialEffect GetSpecialEffect(SpecialEffectID id)
+    public StatusEffect GetSpecialEffect(StatusEffectID id)
     {
         if (_specialEffects.ContainsKey(id))
             return _specialEffects[id];
 
         return null;
     }
-}
 
-public abstract class SpecialEffect
-{
-    private SpecialEffectID id;
-    public SpecialEffectID ID => id;
-
-    public GameObject visualGameObject;
-
-    public abstract void ApplyStatusEffect(CharacterStatBase stat, Dictionary<SpecialEffectID, SpecialEffect> effectList);
-    public abstract void OnUpdate(CharacterStatBase stat, float deltaTime);
-
-    public SpecialEffect(SpecialEffectID id)
+    public void CleanseAll()
     {
-        this.id = id;
+        foreach (var effect in _specialEffects)
+        {
+            Destroy(effect.Value.visualGameObject);
+        }
+        _specialEffects.Clear();
+    }
+
+    public bool CanMove()
+    {
+        return !_specialEffects.ContainsKey(StatusEffectID.Root);
     }
 }
 
-public enum SpecialEffectID
-{
-    None = 0,
-    Bleed = 1,
-}

@@ -7,4 +7,5 @@ public class StatSO : ScriptableObject
     public float Damage;
     public float Defend;
     public float MovementSpeed;
+    public float RecoverMultiplier;
 }

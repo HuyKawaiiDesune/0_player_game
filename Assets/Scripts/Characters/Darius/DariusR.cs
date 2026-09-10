@@ -15,7 +15,7 @@ public class DariusR : BasicAbility
         {
             CharacterStatBase stat = target.Character.Stat;
 
-            if (stat.GetSpecialEffect(SpecialEffectID.Bleed) is Bleed bleed)
+            if (stat.GetSpecialEffect(StatusEffectID.Bleed) is Bleed bleed)
             {
                 CharacterHealthBase health = target.Character.Health;
 

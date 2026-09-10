@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CharacterBase : MonoBehaviour
 {
+    protected CharacterAnimator animator;
     protected CharacterMovementBase movement;
     protected CharacterStatBase stat;
     protected CharacterHealthBase health;
@@ -12,6 +13,7 @@ public class CharacterBase : MonoBehaviour
 
     private void Awake()
     {
+        animator = GetComponent<CharacterAnimator>();
         movement = GetComponent<CharacterMovementBase>();
         stat = GetComponent<CharacterStatBase>();
         health = GetComponent<CharacterHealthBase>();
@@ -29,6 +31,19 @@ public class CharacterBase : MonoBehaviour
         {
             otherCharacterHealth.Damaged(stat.Damage);
         }
+    }
+
+    public void GetPushBack(Vector2 source, float force)
+    {
+        movement.PushBack(source, force);
+    }
+
+    public virtual void Restart()
+    {
+        movement.Restart();
+        health.Restart();
+        state = new AState(CharacterState.Idle);
+        stat.CleanseAll();
     }
 }
 

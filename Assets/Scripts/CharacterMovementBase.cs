@@ -9,10 +9,13 @@ public class CharacterMovementBase : MonoBehaviour
     private CharacterStatBase stat;
 
     [SerializeField]
-    private float speed;
+    private float movementSpeed;
+    private float recoverMultiplier;
 
+    private float currentSpeed;
     private Rigidbody2D _rb;
     private Vector2 _moveDirection;
+    private Vector2 startPos;
 
     [HideInInspector]
     public UnityEvent<GameObject> CollideWithCharaterEvent;
@@ -26,18 +29,23 @@ public class CharacterMovementBase : MonoBehaviour
     private void Start()
     {
         _moveDirection = Random.insideUnitCircle.normalized;
-        speed = stat.MovementSpeed;
+        movementSpeed = stat.MovementSpeed;
+        recoverMultiplier = stat.RecoverMultiplier;
+        currentSpeed = movementSpeed;
+        startPos = transform.position;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (stat.Rooted)
+        if (!stat.CanMove())
             _rb.linearVelocity = Vector2.zero;
         else
-            _rb.linearVelocity = _moveDirection * speed;
+        {
+            currentSpeed = Mathf.Lerp(currentSpeed, movementSpeed, Time.fixedDeltaTime * recoverMultiplier);
+            _rb.linearVelocity = _moveDirection * currentSpeed;
+
+        }
     }
-
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.layer == ProjectConst.WALL_LAYER)
@@ -63,11 +71,17 @@ public class CharacterMovementBase : MonoBehaviour
         _moveDirection = reflectedVelocity;
     }
 
-#if UNITY_EDITOR
-    [Button]
-    public void ResetPosition()
+    public void PushBack(Vector2 sourcePos, float force)
     {
-        transform.position = Vector3.zero;
+        _moveDirection = Vector2.Normalize(_rb.position - sourcePos);
+        currentSpeed = force;
     }
-#endif
+
+    [Button]
+    public void Restart()
+    {
+        transform.position = startPos;
+        _moveDirection = Random.insideUnitCircle.normalized;
+        currentSpeed = movementSpeed;
+    }
 }

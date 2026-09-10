@@ -63,7 +63,8 @@ public class Garen : CharacterBase
 
     private void ActiveR(CharacterBase target, float damage)
     {
-        stat.Root();
+        Root root = new Root(Time.time + R.CastTime);
+        stat.ApplyStatusEffect(root);
         ToggleE(false);
 
         DOVirtual.DelayedCall(R.CastTime, () =>
@@ -77,10 +78,8 @@ public class Garen : CharacterBase
 
         DOVirtual.DelayedCall(eActiveDelay, () =>
         {
-            stat.UnRoot();
             ToggleE(true);
         });
-
     }
 
     private void ToggleE(bool active)

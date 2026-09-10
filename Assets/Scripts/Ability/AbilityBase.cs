@@ -13,12 +13,20 @@ public abstract class AbilityBase<T> : MonoBehaviour where T : AbilityTarget, ne
     public List<T> targetInRage;
     private List<T> toRemoveTarget;
 
+    private bool _available;
+    public bool available
+    {
+        get => _available;
+        set => _available = value;
+    }
+
     private void Awake()
     {
         if (character == null)
             GetComponentInParent<CharacterBase>();
         targetInRage = new List<T>();
         toRemoveTarget = new List<T>();
+        _available = true;
 
         OnAwake();
     }
@@ -76,6 +84,11 @@ public abstract class AbilityBase<T> : MonoBehaviour where T : AbilityTarget, ne
                 break;
             }
         }
+    }
+
+    public void Restart()
+    {
+        _available = true;
     }
 }
 

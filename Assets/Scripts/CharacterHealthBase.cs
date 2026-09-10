@@ -68,4 +68,10 @@ public class CharacterHealthBase : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+
+    public void Restart()
+    {
+        value = maxHealth;
+        OnHealthChange?.Invoke(value);
+    }
 }
