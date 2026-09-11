@@ -2255,6 +2255,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GarenE
   character: {fileID: 8972924648394658560}
   castTime: 0
+  stateDuration: 0
   maxTimer: 0.1
   OnTimerDone:
     m_PersistentCalls:
@@ -2465,6 +2466,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GarenR
   character: {fileID: 8972924648394658560}
   castTime: 0.5
+  stateDuration: 0
   rMissingHealthDamage: 0.35
   panicHealthThreshold: 0.05
   RTargetFound:
@@ -3234,14 +3236,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5071752321608497139, guid: 10dfc85a437f42b439b406817bbfce53, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6256171332865667792, guid: 10dfc85a437f42b439b406817bbfce53, type: 3}
-      propertyPath: qOutterRange
-      value: 3.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3309,7 +3303,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &8972924648394658559
 MonoBehaviour:
