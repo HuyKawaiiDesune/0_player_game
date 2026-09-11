@@ -103,7 +103,7 @@ GameObject:
   - component: {fileID: 5629210828051025120}
   - component: {fileID: 6531802333618974208}
   m_Layer: 7
-  m_Name: Visual
+  m_Name: Hand_right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,7 +118,7 @@ Transform:
   m_GameObject: {fileID: 1400319838985874683}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.714, y: -0.008, z: -1}
+  m_LocalPosition: {x: 0.6, y: 0.34, z: -1}
   m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -214,6 +214,8 @@ GameObject:
   - component: {fileID: 5659572726461866822}
   - component: {fileID: 1379763602009346023}
   - component: {fileID: 1400188889397972184}
+  - component: {fileID: 1535328988480561645}
+  - component: {fileID: 3226958004484356256}
   m_Layer: 7
   m_Name: Darius
   m_TagString: Untagged
@@ -234,7 +236,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3668124867779605417}
   - {fileID: 592574552387730877}
   - {fileID: 6521919187742030411}
   - {fileID: 7625039296579927472}
@@ -257,7 +258,7 @@ MonoBehaviour:
   R: {fileID: 4092538232352599446}
   aaVisual: {fileID: 5629210828051025120}
   qVisual: {fileID: 1080603158381941979}
-  rVisual: {fileID: 2095110359878726385, guid: 76531ed3a964a454a92887e52fcf07fe, type: 3}
+  rVisual: {fileID: -1505732361535641884, guid: 2667ac988c4f5314ebf01facd94c1030, type: 3}
   bleedDmg: 0.1
   target: {fileID: 0}
 --- !u!114 &1459717335816618844
@@ -360,7 +361,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!114 &1400188889397972184
 MonoBehaviour:
@@ -377,6 +378,41 @@ MonoBehaviour:
   OnHealthChange:
     m_PersistentCalls:
       m_Calls: []
+--- !u!95 &1535328988480561645
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605055157827832997}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6a623d92bda2c1a42a4c6c53bb3d1710, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3226958004484356256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605055157827832997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59e979014c43d234e937b957a7e32018, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterAnimator
+  rAnimationClip: {fileID: 7400000, guid: 14d8e18db6524404597e41be95ecfe9c, type: 2}
 --- !u!1 &2594089832650160935
 GameObject:
   m_ObjectHideFlags: 0
@@ -424,8 +460,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DariusQ
   character: {fileID: 0}
-  castTime: 0.5
-  cooldown: 3
+  castTime: 0.3
+  stateDuration: 1
+  cooldown: 5
   OnActive:
     m_PersistentCalls:
       m_Calls: []
@@ -433,8 +470,7 @@ MonoBehaviour:
   qOuterDamage: 2
   qHeal: 1
   qInnerRange: 1
-  qOutterRange: 0
-  qWindupLength: 0.5
+  qOutterRange: 3.5
 --- !u!58 &8967538201797377565
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -482,7 +518,7 @@ GameObject:
   - component: {fileID: 490185660653063861}
   - component: {fileID: 6742866214311071971}
   m_Layer: 7
-  m_Name: Visual
+  m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -673,11 +709,119 @@ MonoBehaviour:
   On:
   - {fileID: 5266873284272526502}
   Off: []
+  ease: 1
   doneDelay: 0.2
   EventDones: []
   ObjActives: []
   ObjHides:
   - {fileID: 5071752321608497139}
+--- !u!1 &6586347662990035909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6642916490679841732}
+  - component: {fileID: 2543230837700053431}
+  - component: {fileID: 4110623730691709495}
+  m_Layer: 7
+  m_Name: Hand_left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6642916490679841732
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6586347662990035909}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.6, y: 0.34, z: -1}
+  m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 7625039296579927472}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2543230837700053431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6586347662990035909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7ce78e824d0664dbe2089968bbef67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RotateAndBackEffect
+  time: 0.3
+  time_Delay: 0
+  _zRotate: 60
+--- !u!212 &4110623730691709495
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6586347662990035909}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 10
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Color: {r: 0.7830189, g: 0.7830189, b: 0.7830189, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.2, y: 0.2}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
 --- !u!1 &7432980666383991676
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,12 +847,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7432980666383991676}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 3960432992047615110}
+  m_Father: {fileID: 7625039296579927472}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3078648883615254801
 SpriteRenderer:
@@ -757,9 +901,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: 8802701260544295310, guid: 48ec99f58a7a074428c0d9dee0a3b3b9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -801,6 +945,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7213833644529409647}
+  - {fileID: 6642916490679841732}
+  - {fileID: 3668124867779605417}
   m_Father: {fileID: 3960432992047615110}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &370696919142808898
@@ -817,7 +963,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TargetCooldownAbility
   character: {fileID: 844270298700554026}
   castTime: 0.3
-  cooldown: 1
+  stateDuration: 0.3
+  cooldown: 2
   OnAttackAvailable:
     m_PersistentCalls:
       m_Calls: []
@@ -903,7 +1050,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DariusR
   character: {fileID: 844270298700554026}
-  castTime: 0.5
+  castTime: 0.1
+  stateDuration: 1
   damage: 2
   RTargetFound:
     m_PersistentCalls:

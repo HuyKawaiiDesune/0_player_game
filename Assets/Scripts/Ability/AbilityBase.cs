@@ -10,6 +10,10 @@ public abstract class AbilityBase<T> : MonoBehaviour where T : AbilityTarget, ne
     private float castTime;
     public float CastTime => castTime;
 
+    [SerializeField]
+    private float stateDuration;
+    public float StateDuration => stateDuration;
+
     public List<T> targetInRage;
     private List<T> toRemoveTarget;
 

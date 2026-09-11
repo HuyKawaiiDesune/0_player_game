@@ -55,17 +55,17 @@ public class Darius : CharacterBase
             if (R.available && R.Active())
             {
                 state.state = CharacterState.R;
-                state.Init(R.CastTime);
+                state.Init(R.StateDuration);
             }
             else if (Q.Active())
             {
                 state.state = CharacterState.Q;
-                state.Init(Q.CastTime);
+                state.Init(Q.StateDuration);
             }
             else if (AA.Active())
             {
                 state.state = CharacterState.AA;
-                state.Init(AA.CastTime);
+                state.Init(AA.StateDuration);
             }
         }
     }
@@ -98,7 +98,7 @@ public class Darius : CharacterBase
     {
         QVisual();
 
-        DOVirtual.DelayedCall(Q.QWindupLength, QDamage);
+        DOVirtual.DelayedCall(Q.CastTime, QDamage);
     }
 
     private void QVisual()
@@ -130,7 +130,6 @@ public class Darius : CharacterBase
         }
     }
 
-    float rStagger = 0.4f;
     private void ActiveR(CharacterBase target, float damage)
     {
         animator.PlayR(out float length);
@@ -184,7 +183,7 @@ public class Bleed : StatusEffect
 
     public float bleedTimer;
     public const float MAX_TIMER = 1.0f;
-    public const int MAX_STACK = 1;
+    public const int MAX_STACK = 5;
 
     public override void OnUpdate(CharacterStatBase stat, float deltaTime)
     {

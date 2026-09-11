@@ -20,8 +20,4 @@ public class DariusQ : ActiveCooldownAbility
     [SerializeField]
     private float qOutterRange;
     public float QOutterRange => qOutterRange;
-
-    [SerializeField]
-    private float qWindupLength;
-    public float QWindupLength => qWindupLength;
 }
